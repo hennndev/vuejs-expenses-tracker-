@@ -12,14 +12,24 @@
                 errors: {}
             }
         },
-        props: ['handleAddTransaction'],
+        props: ['transaction', 'handleAddTransaction'],
+        watch: {
+            transaction() {
+                this.transactionValues = {
+                    transactionName: this.transaction.transactionName,
+                    transactionCategory: this.transaction.transactionCategory,
+                    costCategory: this.transaction.costCategory,
+                    transactionCost: this.transaction.transactionCost,
+                    transactionDescription: this.transaction.transactionDescription
+                }
+            }
+        },
         methods: {
             handleBlur(fieldName) {
                 if(this.transactionValues[fieldName]) {
-                    this.errors[fieldName] = ''
+                    delete this.errors[fieldName]
                 } else {
-                    const errors = this.handleErrors()
-                    this.errors = errors
+                    this.errors[fieldName] = true
                 }
             },
             handleErrors() {
@@ -58,15 +68,33 @@
                 }
                 return errors
             },
+            handleClear() {
+                this.transactionValues = {
+                    transactionName: '',
+                    transactionCategory: 'income',
+                    costCategory: '',
+                    transactionCost: '',
+                    transactionDescription: ''
+                }
+                this.errors = {}
+            },
             handleSubmit() {
                 const errors = this.handleErrors()
                 this.errors = errors
                 if(Object.keys(errors).length < 1) {
-                    this.handleAddTransaction({
-                        id: new Date().getTime(),
-                        date: new Date(),
-                        ...this.transactionValues
-                    }) 
+                    if(this.transaction.id) {
+                        this.handleAddTransaction({
+                            ...this.transaction,
+                            ...this.transactionValues
+                        })
+                    } else {
+                        this.handleAddTransaction({
+                            id: new Date().getTime(),
+                            date: new Date(),
+                            ...this.transactionValues
+                        }) 
+                    }
+                    this.handleClear()
                 } 
             }
         },
@@ -126,9 +154,14 @@
                     @blur="handleBlur('transactionCost')"
                     :class="[errors.transactionCost && 'border-2 border-red-300 focus:ring-0 focus:border-2 focus:border-red-300' , 'w-full input-control']">
             </div>
-            <button type="submit" class="border-none outline-none bg-blue-300 text-gray-700 rounded-md p-3 font-semibold hover:bg-blue-500 hover:text-white">
-                Submit
-            </button>
+            <div class="flexx space-x-3">
+                <button type="submit" class="flex-1 border-none outline-none bg-blue-300 text-gray-700 rounded-md p-3 font-semibold hover:bg-blue-500 hover:text-white duration-300">
+                    Submit
+                </button>
+                <button type="button" class="flex-1 border-none outline-none bg-red-300 text-gray-700 rounded-md p-3 font-semibold hover:bg-red-500 hover:text-white duration-300" @click="handleClear">
+                    Clear
+                </button>
+            </div>
         </form>
     </section>
 </template>

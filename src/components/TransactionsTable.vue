@@ -1,6 +1,14 @@
 <script>
     export default {
-        props: ['transactions']
+        props: ['transactions', 'handleEditTransaction', 'handleDeleteTransaction'],
+        methods: {
+            showAlertDelete(id) {
+                const isDeleted = confirm("Are you sure want to delete this transaction?")
+                if(isDeleted) {
+                    this.handleDeleteTransaction(id)
+                }
+            }
+        }
     }
 </script>
 
@@ -43,11 +51,29 @@
                             Description
                         </td>
                         <td class="px-6 py-4">
-                            <a href="#" class="font-medium text-blue-600 hover:underline mr-3">Edit</a>
-                            <a href="#" class="font-medium text-red-600 hover:underline">Delete</a>
+                            <a href="#" class="font-medium text-blue-600 hover:underline mr-3" @click.prevent="handleEditTransaction(tr.id)">Edit</a>
+                            <a href="#" class="font-medium text-red-600 hover:underline" @click="showAlertDelete(tr.id)">Delete</a>
                         </td>
                     </tr>
                 </template>
+
+                <tr v-show="transactions.length < 1">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-700 whitespace-nowrap">
+                        -
+                    </th>
+                    <td class="px-6 py-4 text-gray-700 font-medium">
+                        -
+                    </td>
+                    <td class="px-6 py-4 text-gray-700 font-medium">
+                        -
+                    </td>
+                    <td class="px-6 py-4 text-gray-700">
+                        -
+                    </td>
+                    <td class="px-6 py-4">
+                        -
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
